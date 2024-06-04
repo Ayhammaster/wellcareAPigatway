@@ -1,0 +1,102 @@
+version: '3.8'
+
+services:
+  social_media_app_users:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ""
+    ports:
+      - "3306:3306"
+    volumes:
+      - social_media_app_users:/var/lib/mysql
+    networks:
+      - spring_network
+
+  social_media_app_posts:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ""
+    ports:
+      - "3307:3307"
+    volumes:
+      - social_media_app_posts:/var/lib/mysql
+    networks:
+      - spring_network
+
+  social_media_app_comments:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ""
+    ports:
+      - "3308:3308"
+    volumes:
+      - social_media_app_comments:/var/lib/mysql
+    networks:
+      - spring_network
+
+  UserService:
+    build:
+      context: ./UserService
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8081:8081"
+    depends_on:
+      - social_media_app_users
+    networks:
+      - spring_network
+
+  PostService:
+    build:
+      context: ./PostService
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8082:8082"
+    depends_on:
+      - social_media_app_posts
+    networks:
+      - spring_network
+
+  Comment-Service:
+    build:
+      context: ./CommentService
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8083:8083"
+    depends_on:
+      - social_media_app_comments
+    networks:
+      - spring_network
+
+  ApiGatway:
+    build:
+      context: ./ApiGatway
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - spring_network
+
+  EurekaService:
+    build:
+      context: ./EurekaService
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8761:8761"
+    networks:
+      - spring_network     
+
+networks:
+  spring_network:
+
+volumes:
+  social_media_app_users:
+  social_media_app_posts:
+  social_media_app_comments:
